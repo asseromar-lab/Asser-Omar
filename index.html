@@ -187,6 +187,17 @@ tbody tr+tr td{border-top:1px solid var(--line)}
 .box{border:1px solid var(--line);padding:14px 16px}
 .box h5{margin:0 0 6px;font:600 13px var(--sans);color:var(--maroon)}
 .totals .pornote{display:block;font-weight:400;font-style:italic;font-size:12.5px;text-align:right;letter-spacing:0}
+.tline{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column}
+.tline li{display:grid;grid-template-columns:62px 14px 1fr;gap:0 10px;position:relative;padding-bottom:12px}
+.tline .tn{font:700 18px/1 var(--sans);color:var(--maroon)}
+.tline .tl2{display:block;font:700 9.5px/1.4 var(--sans);letter-spacing:.06em;color:var(--maroon);margin-top:3px}
+.tline .td{width:7px;height:7px;border-radius:50%;background:var(--maroon);margin-top:5px;justify-self:center}
+.tline li:not(:last-child)::after{content:"";position:absolute;left:78px;top:16px;bottom:2px;width:1px;background:var(--maroon)}
+.tline h6{margin:0;font:700 13.5px/1.3 var(--sans);color:var(--maroon)}
+.tline p{margin:2px 0 0;font-size:12.5px;color:var(--ink2);line-height:1.5}
+.tline .tnote{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:12px;font-style:italic;color:var(--maroon)}
+.tline .tnote::before{content:"";width:7px;height:7px;background:var(--maroon)}
+.tline .tbadge{display:inline-block;margin-top:6px;background:var(--maroon);color:#fff;font:700 10px/1 var(--sans);letter-spacing:.04em;padding:6px 9px;border-radius:3px}
 .box ul.plain{list-style:none;padding-left:0}
 .box ul{margin:0;padding-left:18px;font-size:13px;color:var(--ink2)}
 .actions{display:flex;gap:10px;flex-wrap:wrap}
@@ -599,6 +610,10 @@ html[lang="ar"] .lead,html[lang="ar"] .head p{line-height:1.8}
             <li>All communication through a single point of contact on your end.</li>
             <li>All approvals on brief, timelines and posting dates are confirmed via WhatsApp.</li>
           </ul>
+        </div>
+        <div class="box tl">
+          <h5>Project timeline</h5>
+          <ol class="tline" id="tline"></ol>
         </div>
         <div class="approver">
           <div class="apl" data-i18n="ap_to">Send your approval to</div>
@@ -1193,6 +1208,10 @@ const TIMELINE=[
  ["06","REVIEW","Amendments Received","Client reviews the draft and submits all required amendments in a single round of feedback.","Client dependent","2 ROUNDS OF REVISIONS INCLUDED"],
  ["07","+2 DAYS","Amendments Delivered","All agreed amendments are applied and the final video is delivered within 2 business days.","2 business days from amendments",""]
 ];
+function renderTimeline(){
+  const el=document.getElementById("tline"); if(!el) return;
+  el.innerHTML=TIMELINE.map(r=>`<li><div><span class="tn">${r[0]}</span><span class="tl2">${r[1]}</span></div><span class="td"></span><div><h6>${r[2]}</h6><p>${r[3]}</p>${r[4]?`<span class="tnote">${r[4]}</span>`:""}${r[5]?`<span class="tbadge">${r[5]}</span>`:""}</div></li>`).join("");
+}
 function timelinePage(doc,M,INK,L,R,x0,x1){
   doc.setTextColor(...M); doc.setFont("helvetica","bold"); doc.setFontSize(11.5);
   doc.text("PROJECT TIMELINE",L+3,68,{charSpace:.4});
@@ -1288,10 +1307,7 @@ function buildPDF(){
   const ar=arabicImage("(شهادة التيسيرات)");
   if(ar){ const h=5, w=h*ar.w/ar.h; doc.addImage(ar.url,"PNG",x0+half+15,ty+1,w,h); }
   foot();
-  // page 2: timeline
-  doc.addPage(); head(); timelinePage(doc,M,INK,L,R,x0,x1);
-  foot();
-  // page 3: terms
+  // page 2: terms
   doc.addPage(); head();
   let yy=76;
   doc.setTextColor(...M); doc.setFont("helvetica","bold"); doc.setFontSize(11.5);
@@ -1309,6 +1325,9 @@ function buildPDF(){
   doc.setFont("helvetica","bold"); doc.setFontSize(11);
   doc.text(doc.splitTextToSize("We believe these terms will help us deliver the best possible results while maintaining a smooth and efficient workflow.",R-L-8),L+3,yy+4,{lineHeightFactor:1.4});
   box(x0,62,x1-x0,yy+22-62);
+  foot();
+  // page 3: timeline
+  doc.addPage(); head(); timelinePage(doc,M,INK,L,R,x0,x1);
   foot();
   return doc;
 }
@@ -1362,6 +1381,7 @@ $("pdf").addEventListener("click",async()=>{
 });
 applyLang();
 render();
+renderTimeline();
 loadSerial();
 </script>
 
