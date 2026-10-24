@@ -494,12 +494,21 @@ html[lang="ar"] .lead,html[lang="ar"] .head p{line-height:1.8}
             </div>
           </div>
           <div class="svc" id="row-outdoor">
-            <h4 data-i18n="s_outdoor_n">Reel (outdoor)</h4><span class="price" data-price="outdoor">Price upon request</span>
-            <p data-i18n="s_outdoor_d">A scripted, presenter-led reel shot on site at your project.</p>
-            <div class="qty" role="group" aria-label="Reel (outdoor) quantity">
+            <h4 data-i18n="s_outdoor_n">Reel (outdoor, Cairo)</h4><span class="price" data-price="outdoor">350,000 EGP</span>
+            <p data-i18n="s_outdoor_d">A scripted, presenter-led reel shot on site at your project in Cairo.</p>
+            <div class="qty" role="group" aria-label="Reel (outdoor, Cairo) quantity">
               <button type="button" data-id="outdoor" data-d="-1" aria-label="Remove one">−</button>
               <output id="q-outdoor">0</output>
               <button type="button" data-id="outdoor" data-d="1" aria-label="Add one">+</button>
+            </div>
+          </div>
+          <div class="svc" id="row-outdoor2">
+            <h4 data-i18n="s_outdoor2_n">Reel (outdoor, outside Cairo)</h4><span class="price" data-price="outdoor2">Price upon request</span>
+            <p data-i18n="s_outdoor2_d">A scripted, presenter-led reel shot on site outside Cairo. Priced per location.</p>
+            <div class="qty" role="group" aria-label="Reel (outdoor, outside Cairo) quantity">
+              <button type="button" data-id="outdoor2" data-d="-1" aria-label="Remove one">−</button>
+              <output id="q-outdoor2">0</output>
+              <button type="button" data-id="outdoor2" data-d="1" aria-label="Add one">+</button>
             </div>
           </div>
           <div class="svc" id="row-coverage">
@@ -568,7 +577,7 @@ html[lang="ar"] .lead,html[lang="ar"] .head p{line-height:1.8}
           <div id="netRow" hidden><span>NET TOTAL</span><span id="net"></span></div>
           <div><span>TAX (14%)</span><span id="vat"></span></div>
           <div class="grand"><span>GRAND TOTAL</span><span id="tot"></span></div>
-          <div class="pornote" id="porNote" hidden>+ Reel (outdoor): price upon request</div>
+          <div class="pornote" id="porNote" hidden>+ Reel (outdoor, outside Cairo): price upon request</div>
         </div>
         <div class="box">
           <h5>Payable to</h5>
@@ -1021,12 +1030,13 @@ const SERVICES=[
   {id:"stories",name:"Set of stories (3 non-scripted)",price:50000,desc:"3 non-scripted stories on @asseromar covering your project, with link and mention."},
   {id:"event",name:"Event attendance + stories",price:150000,desc:"Asser attends your launch or event and covers it live on stories."},
   {id:"reel",name:"Reel (indoor)",price:250000,desc:"A scripted, presenter-led reel explaining your project, shot indoors."},
-  {id:"outdoor",name:"Reel (outdoor)",price:0,por:true,desc:"A scripted, presenter-led reel shot on site at your project."},
+  {id:"outdoor",name:"Reel (outdoor, Cairo)",price:350000,desc:"A scripted, presenter-led reel shot on site at your project in Cairo."},
+  {id:"outdoor2",name:"Reel (outdoor, outside Cairo)",price:0,por:true,desc:"A scripted, presenter-led reel shot on site outside Cairo. Priced per location."},
   {id:"coverage",name:"Coverage reel + event + stories",price:350000,desc:"Event attendance, live stories, and a reel cut from the event."},
   {id:"full",name:"Reel + event attendance + stories",price:400000,desc:"A dedicated project reel plus event attendance and stories."},
   {id:"rights",name:"Copyrights",price:50000,desc:"Usage rights so your team can reuse the reel on your own pages and ads."}
 ];
-const qty={stories:0,event:0,reel:1,outdoor:0,coverage:0,full:0,rights:0};
+const qty={stories:0,event:0,reel:1,outdoor:0,outdoor2:0,coverage:0,full:0,rights:0};
 const VAT=0.14, $=id=>document.getElementById(id), fmt=n=>n.toLocaleString("en-US");
 const now=new Date(), pad=n=>String(n).padStart(2,"0");
 const dateStr=`${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`;
@@ -1064,7 +1074,8 @@ const T={
  s_stories_n:["Set of stories (3 non-scripted)","مجموعة ستوريز (3 بدون سكريبت)"],s_stories_d:["3 non-scripted stories on @asseromar covering your project, with link and mention.","3 ستوريز بدون سكريبت على حساب @asseromar عن مشروعك، مع رابط ومنشن."],
  s_event_n:["Event attendance + stories","حضور فعالية + ستوريز"],s_event_d:["Asser attends your launch or event and covers it live on stories.","آسر يحضر الإطلاق أو الفعالية ويغطيها مباشرة على الستوريز."],
  s_reel_n:["Reel (indoor)","ريل (تصوير داخلي)"],s_reel_d:["A scripted, presenter-led reel explaining your project, shot indoors.","ريل بسكريبت يقدّمه آسر ويشرح مشروعك، بتصوير داخلي."],
- s_outdoor_n:["Reel (outdoor)","ريل (تصوير خارجي)"],s_outdoor_d:["A scripted, presenter-led reel shot on site at your project.","ريل بسكريبت يقدّمه آسر، بتصوير في موقع مشروعك."],
+ s_outdoor_n:["Reel (outdoor, Cairo)","ريل (تصوير خارجي، القاهرة)"],s_outdoor_d:["A scripted, presenter-led reel shot on site at your project in Cairo.","ريل بسكريبت يقدّمه آسر، بتصوير في موقع مشروعك داخل القاهرة."],
+ s_outdoor2_n:["Reel (outdoor, outside Cairo)","ريل (تصوير خارجي، خارج القاهرة)"],s_outdoor2_d:["A scripted, presenter-led reel shot on site outside Cairo. Priced per location.","ريل بسكريبت يقدّمه آسر، بتصوير خارج القاهرة. السعر حسب الموقع."],
  s_coverage_n:["Coverage reel + event + stories","ريل تغطية + فعالية + ستوريز"],s_coverage_d:["Event attendance, live stories, and a reel cut from the event.","حضور الفعالية وستوريز مباشرة وريل من تغطية الفعالية."],
  s_full_n:["Reel + event attendance + stories","ريل + حضور فعالية + ستوريز"],s_full_d:["A dedicated project reel plus event attendance and stories.","ريل خاص بالمشروع، مع حضور الفعالية والستوريز."],
  s_rights_n:["Copyrights","حقوق الاستخدام"],s_rights_d:["Usage rights so your team can reuse the reel on your own pages and ads.","حقوق استخدام الريل على صفحاتكم وفي إعلاناتكم."],
@@ -1077,7 +1088,7 @@ const T={
  t_prep:["Preparing your PDF…","جارٍ تجهيز ملف الـ PDF…"],t_ready:["Your PDF is ready.","ملف الـ PDF جاهز."],t_saved:["PDF saved.","تم حفظ الملف."],
  t_fail:["Couldn't create the PDF. Please try again.","تعذّر إنشاء الملف. حاول مرة أخرى."],t_cancel:["Download cancelled.","تم إلغاء التحميل."],
  t_wait:["A download is already waiting for your confirmation.","هناك تحميل في انتظار تأكيدك."],t_view:["The PDF can't be saved in this view.","لا يمكن حفظ الملف من هنا."],t_noview:["PDF download isn't available in this view. Tap Approve on WhatsApp and our team will send you the quotation.","تحميل الـ PDF غير متاح من هنا. اضغط الموافقة عبر واتساب وسيرسل لك فريقنا عرض السعر."],t_nolib:["The PDF tool didn't load. Check your connection and refresh the page.","لم تُحمّل أداة الـ PDF. تأكد من الاتصال وأعد تحميل الصفحة."],
- egp:["EGP","جنيه"],por:["Price upon request","السعر عند الطلب"],por_note:["+ Reel (outdoor): price upon request","+ ريل (تصوير خارجي): السعر عند الطلب"],promo_ok:["applied","تم تطبيقه"],promo_bad:["Invalid code","كود غير صحيح"],d_n:["Promo code","كود الخصم"],d_d:["Have a promo code from our team? Enter it here and the discount is deducted before tax.","معاك كود خصم من فريقنا؟ اكتبه هنا والخصم يتخصم قبل الضريبة."],d_ph:["Code","الكود"]
+ egp:["EGP","جنيه"],por:["Price upon request","السعر عند الطلب"],por_note:["+ Reel (outdoor, outside Cairo): price upon request","+ ريل (تصوير خارجي، خارج القاهرة): السعر عند الطلب"],promo_ok:["applied","تم تطبيقه"],promo_bad:["Invalid code","كود غير صحيح"],d_n:["Promo code","كود الخصم"],d_d:["Have a promo code from our team? Enter it here and the discount is deducted before tax.","معاك كود خصم من فريقنا؟ اكتبه هنا والخصم يتخصم قبل الضريبة."],d_ph:["Code","الكود"]
 };
 let LANG="en";
 try{ if(localStorage.getItem("ao_lang")==="ar") LANG="ar"; }catch(e){}
@@ -1129,7 +1140,7 @@ const hasPor=sel=>sel.some(s=>s.por);
 function totals(){
   const sel=SERVICES.filter(s=>qty[s.id]);
   const sub=sel.reduce((a,s)=>a+s.price*qty[s.id],0);
-  const code=($("cDisc").value||"").trim(); const codeVal=/^\d{1,4}$/.test(code)?Number(code)*1000:0;
+  const code=($("cDisc").value||"").trim(); const cm=code.match(/^TA(\d{1,4})$/i); const codeVal=cm?Number(cm[1])*1000:0;
   const disc=Math.min(sub,codeVal);
   const net=sub-disc, vat=Math.round(net*VAT);
   return {sel,sub,disc,net,vat,tot:net+vat};
@@ -1139,7 +1150,7 @@ function quoteText(){
   return [`Quotation request ${qno} – Triple A Media Production`,`Date: ${dateStr}`,
     `Company: ${$("cName").value}`,`Representative: ${$("cRep").value}`,`Phone: ${$("cPhone").value}`,`Client: ${$("cCompany").value||"-"}`,`Project: ${$("cProject").value}`,"",
     ...sel.map(s=>`• ${s.name} × ${qty[s.id]} = ${s.por?"price upon request":fmt(s.price*qty[s.id])+" EGP"}`),"",
-    `Sub total: ${fmt(sub)} EGP`,...(disc?[`Discount: (${fmt(disc)}) EGP`,`Net total: ${fmt(net)} EGP`]:[]),`Tax (14%): ${fmt(vat)} EGP`,`Grand total: ${fmt(tot)} EGP`,...(hasPor(sel)?["+ Reel (outdoor): price upon request"]:[])].join("\n");
+    `Sub total: ${fmt(sub)} EGP`,...(disc?[`Discount: (${fmt(disc)}) EGP`,`Net total: ${fmt(net)} EGP`]:[]),`Tax (14%): ${fmt(vat)} EGP`,`Grand total: ${fmt(tot)} EGP`,...(hasPor(sel)?["+ Reel (outdoor, outside Cairo): price upon request"]:[])].join("\n");
 }
 function render(){
   const {sel,sub,disc,net,vat,tot}=totals();
@@ -1148,8 +1159,8 @@ function render(){
     :`<tr><td colspan="4" class="empty">Add a service to start your quotation.</td></tr>`;
   $("sub").textContent=fmt(sub); $("vat").textContent=fmt(vat); $("tot").textContent=fmt(tot);
   $("porNote").hidden=!hasPor(sel); $("discRow").hidden=$("netRow").hidden=!disc; $("disc").textContent="("+fmt(disc)+")"; $("net").textContent=fmt(net);
-  const codeIn=($("cDisc").value||"").trim(); $("discShow").textContent=disc?"− "+fmt(disc)+" "+tr("egp")+" "+tr("promo_ok"):(codeIn&&!/^\d{1,4}$/.test(codeIn)?tr("promo_bad"):"");
-  $("cDisc").classList.toggle("invalid",!!codeIn&&!/^\d{1,4}$/.test(codeIn)); $("row-disc").classList.toggle("on",disc>0);
+  const codeIn=($("cDisc").value||"").trim(); $("discShow").textContent=disc?"− "+fmt(disc)+" "+tr("egp")+" "+tr("promo_ok"):(codeIn&&!/^TA\d{1,4}$/i.test(codeIn)?tr("promo_bad"):"");
+  $("cDisc").classList.toggle("invalid",!!codeIn&&!/^TA\d{1,4}$/i.test(codeIn)); $("row-disc").classList.toggle("on",disc>0);
   $("toName").textContent=$("cName").value||"—"; $("toCompany").textContent=$("cCompany").value||"—"; $("toProject").textContent=$("cProject").value||"—"; $("toPhone").textContent=$("cPhone").value||"—"; $("toRep").textContent=$("cRep").value||"—";
   const ap=APPROVERS[AP]; $("wa").href="https://wa.me/"+ap.phone+"?text="+encodeURIComponent("Hi "+ap.first+", I'd like to go ahead with this campaign:\n\n"+quoteText());
   $("wa").textContent=tr("b_wa")+" · "+ap.first;
@@ -1258,7 +1269,7 @@ function buildPDF(){
   const tl=[["SUB TOTAL",fmt(sub)],...(disc?[["DISCOUNT","("+fmt(disc)+")"],["NET TOTAL",fmt(net)]]:[]),["TAX (14%)",fmt(vat)],["GRAND TOTAL",fmt(tot)]];
   tl.forEach(([k,v],i)=>{const last=i===tl.length-1; doc.setFont("helvetica","bold");doc.setFontSize(last?11.5:10.5);
     if(last){doc.setLineWidth(.25);doc.line(cQ-8,y-5.5,cT,y-5.5);} doc.text(k,cQ-8,y,{charSpace:.4}); doc.text(v,cT,y,{align:"right"}); y+=8.5;});
-  if(hasPor(sel)){ doc.setFont("helvetica","italic"); doc.setFontSize(8.5); doc.text("+ Reel (outdoor): price upon request",cT,y-2,{align:"right"}); y+=4; }
+  if(hasPor(sel)){ doc.setFont("helvetica","italic"); doc.setFontSize(8.5); doc.text("+ Reel (outdoor, outside Cairo): price upon request",cT,y-2,{align:"right"}); y+=4; }
   const boxEnd=y+4; box(x0,90,x1-x0,boxEnd-90);
   const by=boxEnd+10, bh=Math.min(56,266-by-6), half=(x1-x0-6)/2;
   box(x0,by,half,bh); box(x0+half+6,by,half,bh);
