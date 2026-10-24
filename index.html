@@ -173,6 +173,7 @@ input{width:100%;min-width:0;background:var(--paper);border:1px solid var(--line
 .qhead{text-align:right;color:var(--maroon)}
 .qhead .t{font:700 22px/1.2 var(--sans);letter-spacing:.2em}
 .qhead div{font-size:13px;letter-spacing:.1em}
+.qhead .valid{font-size:11px;opacity:.85}
 .to{font-size:14px;color:var(--muted)} .to b{color:var(--ink);font-weight:600}
 .tablewrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:14px}
@@ -233,6 +234,14 @@ details.more .toplist{margin-top:10px}
 .sublabel{font:600 10px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--maroon);margin-bottom:12px}
 .clients ul{gap:10px 26px}
 .clients li{font-size:18px}
+section.quotes{padding-block:56px;border-top:1px solid var(--line);background:var(--white)}
+section.quotes .in{display:flex;flex-direction:column;gap:24px}
+.qgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.qgrid figure{margin:0;display:flex;flex-direction:column;gap:14px;border-top:2px solid var(--maroon);padding-top:18px;min-width:0}
+.qgrid blockquote{margin:0;font:italic 300 22px/1.35 var(--serif);color:var(--ink)}
+.qgrid figcaption{font:600 10.5px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--maroon)}
+@media (max-width:900px){.qgrid{grid-template-columns:1fr;gap:22px}.qgrid blockquote{font-size:20px}}
+html[lang="ar"] .qgrid figcaption{letter-spacing:0}
 section.vault{padding-block:64px 72px;border-top:1px solid var(--line)}
 .strip{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px max(16px,calc((100vw - 1140px)/2)) 20px;scrollbar-width:thin}
 .vcard{flex:0 0 190px;scroll-snap-align:start;text-decoration:none}
@@ -332,10 +341,10 @@ html[lang="ar"] .lead,html[lang="ar"] .head p{line-height:1.8}
     <p class="role" data-i18n-html="role">Real estate content creator · Entrepreneur &amp; Educator</p>
     <p class="lead" data-i18n-html="lead">Presenter-led reels that turn views into leads for Egypt's leading developers, produced by Triple A Media Production.</p>
     <dl class="cover-stats">
-      <div><dt data-i18n="st_f">Followers</dt><dd>142K</dd></div>
-      <div><dt data-i18n="st_p">Avg reel plays</dt><dd>50K</dd></div>
-      <div><dt data-i18n="st_e">Engagement</dt><dd>1.7%</dd></div>
-      <div><dt data-i18n="st_r">Monthly reach</dt><dd>3.4M</dd></div>
+      <div><dt data-i18n="st_f">Followers</dt><dd data-stat="followers">142K</dd></div>
+      <div><dt data-i18n="st_p">Avg reel plays</dt><dd data-stat="plays">50K</dd></div>
+      <div><dt data-i18n="st_e">Engagement</dt><dd data-stat="engagement">1.7%</dd></div>
+      <div><dt data-i18n="st_r">Monthly reach</dt><dd data-stat="reach">3.4M</dd></div>
     </dl>
     <div class="ctas">
       <a class="btn" href="#rates" data-i18n="cta_build">Build your campaign →</a>
@@ -390,6 +399,17 @@ html[lang="ar"] .lead,html[lang="ar"] .head p{line-height:1.8}
         <div class="metrics"><div><b>6th Oct</b><span data-i18n="m_loc">Location</span></div><div><b>9:16</b><span data-i18n="m_pres">Presenter-led</span></div><div><b>Sep ’26</b><span data-i18n="m_pub">Published</span></div></div>
         <a class="link" href="https://www.instagram.com/reel/DdzCru0NFZE/" target="_blank" rel="noopener" data-i18n="watch">Watch on Instagram →</a>
       </article>
+    </div>
+  </div>
+</section>
+
+<section class="quotes band" aria-label="What developers say">
+  <div class="in">
+    <div class="eyebrow" data-i18n="q_eb">What developers say</div>
+    <div class="qgrid">
+      <figure><blockquote>“This single presenter reel generated direct buyer inquiries for Stone Residence and The Brooks within hours of publishing across channels.”</blockquote><figcaption>PRE Group Developments</figcaption></figure>
+      <figure><blockquote>“Addressing the ‘Tayeb vs Shareer’ Sahel debate in the first 5 seconds made this our most shared and highest-converting launch video.”</blockquote><figcaption>K Developments</figcaption></figure>
+      <figure><blockquote>“Showcasing real delivered villas alongside the live handover celebration and Pyramids view gave buyers complete confidence before booking site visits.”</blockquote><figcaption>PRE Group Developments</figcaption></figure>
     </div>
   </div>
 </section>
@@ -573,6 +593,7 @@ html[lang="ar"] .lead,html[lang="ar"] .head p{line-height:1.8}
             <div class="t">QUOTATION</div>
             <div id="qNo"></div>
             <div>DATE: <b id="qDate"></b></div>
+            <div class="valid">VALID UNTIL: <span id="qValid"></span></div>
           </div>
         </header>
         <div class="to">Prepared for <b id="toName"></b> · <span id="toRep"></span> · <span id="toPhone"></span><br>Client: <span id="toCompany"></span> · Project: <span id="toProject"></span></div>
@@ -591,16 +612,13 @@ html[lang="ar"] .lead,html[lang="ar"] .head p{line-height:1.8}
           <div class="pornote" id="porNote" hidden>+ Reel (outdoor, outside Cairo): price upon request</div>
         </div>
         <div class="box">
-          <h5>Payable to</h5>
-          <ul class="plain"><li>Asser Arafa Omar</li><li>CIB Bank · Head office branch</li><li>Swift: CIBEEGCXXXX</li><li>IBAN: EG270010001000000100018165157</li><li>Account number: 100018165157</li></ul>
-        </div>
-        <div class="box">
           <h5>Payment terms</h5>
           <ul>
             <li>All rates quoted are valid for 7 days.</li>
             <li>50% payment in advance for confirmation.</li>
             <li>The remaining amount is due 1 day after posting the reel.</li>
             <li>We are exempted from the 3% (شهادة التيسيرات).</li>
+            <li>Bank details for the 50% advance are included in your PDF.</li>
           </ul>
         </div>
         <div class="box">
@@ -641,6 +659,7 @@ html[lang="ar"] .lead,html[lang="ar"] .head p{line-height:1.8}
   </div>
 </footer>
 
+<script type="application/json" id="ao-stats">{"followers":"142K","plays":"50K","engagement":"1.7%","reach":"3.4M","updated":"2026-10-24"}</script>
 <script>/** @license
  *
  * jsPDF - PDF Document creation from JavaScript
@@ -1054,9 +1073,11 @@ const SERVICES=[
 const qty={stories:0,event:0,reel:1,outdoor:0,outdoor2:0,coverage:0,full:0,rights:0};
 const VAT=0.14, $=id=>document.getElementById(id), fmt=n=>n.toLocaleString("en-US");
 const now=new Date(), pad=n=>String(n).padStart(2,"0");
+const _v=new Date(now.getTime()+7*864e5);
+const validStr=`${pad(_v.getDate())}/${pad(_v.getMonth()+1)}/${_v.getFullYear()}`;
 const dateStr=`${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`;
 let qno=`#W${now.getFullYear()}-${pad(now.getMonth()+1)}${pad(now.getDate())}${Math.floor(Math.random()*90)+10}`;
-$("qNo").textContent=qno; $("qDate").textContent=dateStr;
+$("qNo").textContent=qno; $("qDate").textContent=dateStr; $("qValid").textContent=validStr;
 
 document.getElementById("nojs").hidden=true;
 $("services").addEventListener("click",e=>{
@@ -1103,7 +1124,7 @@ const T={
  t_prep:["Preparing your PDF…","جارٍ تجهيز ملف الـ PDF…"],t_ready:["Your PDF is ready.","ملف الـ PDF جاهز."],t_saved:["PDF saved.","تم حفظ الملف."],
  t_fail:["Couldn't create the PDF. Please try again.","تعذّر إنشاء الملف. حاول مرة أخرى."],t_cancel:["Download cancelled.","تم إلغاء التحميل."],
  t_wait:["A download is already waiting for your confirmation.","هناك تحميل في انتظار تأكيدك."],t_view:["The PDF can't be saved in this view.","لا يمكن حفظ الملف من هنا."],t_noview:["PDF download isn't available in this view. Tap Approve on WhatsApp and our team will send you the quotation.","تحميل الـ PDF غير متاح من هنا. اضغط الموافقة عبر واتساب وسيرسل لك فريقنا عرض السعر."],t_nolib:["The PDF tool didn't load. Check your connection and refresh the page.","لم تُحمّل أداة الـ PDF. تأكد من الاتصال وأعد تحميل الصفحة."],
- egp:["EGP","جنيه"],por:["Price upon request","السعر عند الطلب"],por_note:["+ Reel (outdoor, outside Cairo): price upon request","+ ريل (تصوير خارجي، خارج القاهرة): السعر عند الطلب"],promo_ok:["applied","تم تطبيقه"],promo_bad:["Invalid code","كود غير صحيح"],d_n:["Promo code","كود الخصم"],d_d:["Have a promo code from our team? Enter it here and the discount is deducted before tax.","معاك كود خصم من فريقنا؟ اكتبه هنا والخصم يتخصم قبل الضريبة."],d_ph:["Code","الكود"]
+ q_eb:["What developers say","آراء المطورين"],egp:["EGP","جنيه"],por:["Price upon request","السعر عند الطلب"],por_note:["+ Reel (outdoor, outside Cairo): price upon request","+ ريل (تصوير خارجي، خارج القاهرة): السعر عند الطلب"],promo_ok:["applied","تم تطبيقه"],promo_bad:["Invalid code","كود غير صحيح"],d_n:["Promo code","كود الخصم"],d_d:["Have a promo code from our team? Enter it here and the discount is deducted before tax.","معاك كود خصم من فريقنا؟ اكتبه هنا والخصم يتخصم قبل الضريبة."],d_ph:["Code","الكود"]
 };
 let LANG="en";
 try{ if(localStorage.getItem("ao_lang")==="ar") LANG="ar"; }catch(e){}
@@ -1205,7 +1226,7 @@ const TIMELINE=[
  ["03","APPROVAL","Script Approval","Client reviews the script and provides written approval before any production begins.","Client dependent","2 ROUNDS OF REVISIONS INCLUDED"],
  ["04","SHOOT","Shooting Date Confirmed","Shooting date is locked in and agreed upon by both client and production team.","Agreed mutually",""],
  ["05","+48H","Draft Video Delivered","First cut of the video is delivered to the client within 48 hours of the shoot completing.","48 hours after shoot",""],
- ["06","REVIEW","Amendments Received","Client reviews the draft and submits all required amendments in a single round of feedback.","Client dependent","2 ROUNDS OF REVISIONS INCLUDED"],
+ ["06","REVIEW","Amendments Received","Client reviews the draft and submits the required amendments. Two rounds of revisions are included.","Client dependent","2 ROUNDS OF REVISIONS INCLUDED"],
  ["07","+2 DAYS","Amendments Delivered","All agreed amendments are applied and the final video is delivered within 2 business days.","2 business days from amendments",""]
 ];
 function renderTimeline(){
@@ -1250,6 +1271,7 @@ function buildPDF(){
     doc.text(qno,R,35,{align:"right",charSpace:.4});
     doc.text("DATE: ",R-doc.getTextWidth(dateStr)-2.6,42,{align:"right",charSpace:.4});
     doc.setFont("helvetica","bold"); doc.text(dateStr,R,42,{align:"right",charSpace:.3});
+    doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.text("VALID UNTIL: "+validStr,R,48,{align:"right",charSpace:.3});
   };
   const foot=()=>{
     doc.setDrawColor(...M); doc.setLineWidth(.3); doc.rect(L-6,268,W-2*(L-6),15);
@@ -1379,6 +1401,7 @@ $("pdf").addEventListener("click",async()=>{
     if(c==="unavailable"||c==="not_granted"||c==="capability_disabled"||c==="capability_removed") $("toast").textContent=tr("t_noview");
   }
 });
+try{const st=JSON.parse(document.getElementById("ao-stats").textContent); document.querySelectorAll("[data-stat]").forEach(el=>{if(st[el.dataset.stat]) el.textContent=st[el.dataset.stat];});}catch(e){}
 applyLang();
 render();
 renderTimeline();
