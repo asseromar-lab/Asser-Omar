@@ -186,6 +186,7 @@ tbody tr+tr td{border-top:1px solid var(--line)}
 .totals .grand{font-size:17px;font-weight:700;border-top:1px solid var(--maroon);padding-top:8px;margin-top:2px}
 .box{border:1px solid var(--line);padding:14px 16px}
 .box h5{margin:0 0 6px;font:600 13px var(--sans);color:var(--maroon)}
+.box ul.plain{list-style:none;padding-left:0}
 .box ul{margin:0;padding-left:18px;font-size:13px;color:var(--ink2)}
 .actions{display:flex;gap:10px;flex-wrap:wrap}
 .actions .btn{flex:1 1 180px}
@@ -568,12 +569,16 @@ html[lang="ar"] .lead,html[lang="ar"] .head p{line-height:1.8}
           <div class="grand"><span>GRAND TOTAL</span><span id="tot"></span></div>
         </div>
         <div class="box">
+          <h5>Payable to</h5>
+          <ul class="plain"><li>Asser Arafa Omar</li><li>CIB Bank · Head office branch</li><li>Swift: CIBEEGCXXXX</li><li>IBAN: EG270010001000000100018165157</li><li>Account number: 100018165157</li></ul>
+        </div>
+        <div class="box">
           <h5>Payment terms</h5>
           <ul>
             <li>All rates quoted are valid for 7 days.</li>
             <li>50% payment in advance for confirmation.</li>
             <li>The remaining amount is due 1 day after posting the reel.</li>
-            <li>We are exempt from the 3% withholding tax (شهادة التيسيرات).</li>
+            <li>We are exempted from the 3% (شهادة التيسيرات).</li>
           </ul>
         </div>
         <div class="box">
@@ -1023,7 +1028,7 @@ const qty={stories:0,event:0,reel:1,outdoor:0,coverage:0,full:0,rights:0};
 const VAT=0.14, $=id=>document.getElementById(id), fmt=n=>n.toLocaleString("en-US");
 const now=new Date(), pad=n=>String(n).padStart(2,"0");
 const dateStr=`${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`;
-const qno=`#W${now.getFullYear()}-${pad(now.getMonth()+1)}${pad(now.getDate())}${Math.floor(Math.random()*90)+10}`;
+let qno=`#W${now.getFullYear()}-${pad(now.getMonth()+1)}${pad(now.getDate())}${Math.floor(Math.random()*90)+10}`;
 $("qNo").textContent=qno; $("qDate").textContent=dateStr;
 
 document.getElementById("nojs").hidden=true;
@@ -1092,6 +1097,13 @@ let AP=1;
 document.querySelector(".apopts").addEventListener("click",e=>{const b=e.target.closest(".apo"); if(!b) return; AP=Number(b.dataset.ap);
   document.querySelectorAll(".apo").forEach(x=>x.setAttribute("aria-checked",String(x===b))); render();});
 
+/* ---------- serial number from the Quotations sheet (falls back to a web reference) ---------- */
+async function loadSerial(){
+  if(!LOG_URL) return;
+  try{ const r=await fetch(LOG_URL+"?op=next",{method:"GET"}); const j=await r.json();
+    if(j&&j.next){ qno="#"+String(j.next).replace(/^#/,""); $("qNo").textContent=qno; render(); } }catch(e){}
+}
+
 /* ---------- lead log (fills the "Web Requests" tab of the Triple A Quotations Log sheet) ---------- */
 const LOG_URL="";
 function logLead(action){
@@ -1099,6 +1111,7 @@ function logLead(action){
   const {sel,sub,disc,net,vat,tot}=totals();
   const body=JSON.stringify({no:qno,action,name:$("cName").value.trim(),rep:$("cRep").value.trim(),phone:$("cPhone").value.trim(),company:$("cCompany").value.trim(),project:$("cProject").value.trim(),
     items:sel.map(s=>`${s.name} x${qty[s.id]}`).join(" + "),sub,disc,net,tax:vat,total:tot,date:dateStr,approver:APPROVERS[AP].name,lang:LANG,page:location.protocol==="file:"?"file":location.host});
+  setTimeout(loadSerial,2500);
   try{ if(navigator.sendBeacon && navigator.sendBeacon(LOG_URL,new Blob([body],{type:"text/plain;charset=utf-8"}))) return; }catch(e){}
   try{ fetch(LOG_URL,{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body}).catch(()=>{}); }catch(e){}
 }
@@ -1142,6 +1155,51 @@ $("wa").addEventListener("click",e=>{
   logLead("WhatsApp");
 });
 
+
+/* ---------- PDF helpers ---------- */
+function arabicImage(text){
+  try{
+    const c=document.createElement("canvas"), k=2, fs=40, font=`${fs}px "IBM Plex Sans Arabic","Geeza Pro","Segoe UI",Tahoma,"DejaVu Sans",sans-serif`;
+    let x=c.getContext("2d"); x.font=font;
+    const w=Math.ceil(x.measureText(text).width)+8; c.width=w*k; c.height=Math.ceil(fs*1.5*k);
+    x=c.getContext("2d"); x.scale(k,k); x.font=font; x.direction="rtl"; x.textAlign="right"; x.textBaseline="middle";
+    x.fillStyle="#7b2f2f"; x.fillText(text,w-4,fs*0.75);
+    return {url:c.toDataURL("image/png"),w:c.width,h:c.height};
+  }catch(e){ return null; }
+}
+const TIMELINE=[
+ ["01","DAY 0","Brief & Deposit","Client submits the project brief and transfers 50% of the agreed fee to initiate the project.","","SHOOTING DATE REQUIRED WITH BRIEF"],
+ ["02","+1 DAY","Script Delivery","Script is drafted and delivered back to the client within 1 business day of receiving the brief.","1 business day from brief",""],
+ ["03","APPROVAL","Script Approval","Client reviews the script and provides written approval before any production begins.","Client dependent","2 ROUNDS OF REVISIONS INCLUDED"],
+ ["04","SHOOT","Shooting Date Confirmed","Shooting date is locked in and agreed upon by both client and production team.","Agreed mutually",""],
+ ["05","+48H","Draft Video Delivered","First cut of the video is delivered to the client within 48 hours of the shoot completing.","48 hours after shoot",""],
+ ["06","REVIEW","Amendments Received","Client reviews the draft and submits all required amendments in a single round of feedback.","Client dependent","2 ROUNDS OF REVISIONS INCLUDED"],
+ ["07","+2 DAYS","Amendments Delivered","All agreed amendments are applied and the final video is delivered within 2 business days.","2 business days from amendments",""]
+];
+function timelinePage(doc,M,INK,L,R,x0,x1){
+  doc.setTextColor(...M); doc.setFont("helvetica","bold"); doc.setFontSize(11.5);
+  doc.text("PROJECT TIMELINE",L+3,68,{charSpace:.4});
+  const colN=L+3, colDot=L+33, colT=L+40, wT=R-colT-4;
+  let y=82; const rows=[];
+  TIMELINE.forEach(r=>{
+    const desc=doc.setFont("helvetica","normal").setFontSize(8.8)&&doc.splitTextToSize(r[3],wT);
+    const h=6+desc.length*4+(r[4]?5:0)+(r[5]?8:0)+5; rows.push({r,desc,y,h}); y+=h;
+  });
+  rows.forEach(({r,desc,y,h},i)=>{
+    doc.setTextColor(...M); doc.setFont("helvetica","bold"); doc.setFontSize(16); doc.text(r[0],colN,y+1);
+    doc.setFontSize(7.5); doc.text(r[1],colN,y+6,{charSpace:.3});
+    doc.setFillColor(...M); doc.circle(colDot,y-1.2,1.1,"F");
+    if(i<rows.length-1){ doc.setLineWidth(.35); doc.line(colDot,y+2,colDot,y+h-4); }
+    doc.setFontSize(11.5); doc.text(r[2],colT,y);
+    let yy=y+5; doc.setFont("helvetica","normal"); doc.setFontSize(8.8); doc.setTextColor(...INK);
+    doc.text(desc,colT,yy,{lineHeightFactor:1.35}); yy+=desc.length*4;
+    if(r[4]){ doc.setFillColor(...M); doc.rect(colT,yy-1.9,1.9,1.9,"F"); doc.setTextColor(...M); doc.setFont("helvetica","italic"); doc.setFontSize(8.3); doc.text(r[4],colT+3.4,yy); yy+=5; }
+    if(r[5]){ doc.setFont("helvetica","bold"); doc.setFontSize(7.8); const bw=doc.getTextWidth(r[5])+8;
+      doc.setFillColor(...M); doc.roundedRect(colT,yy-1,bw,6,1,1,"F"); doc.setTextColor(255,255,255); doc.text(r[5],colT+4,yy+3.1); }
+  });
+  const last=rows[rows.length-1]; doc.setDrawColor(...M); doc.setLineWidth(.3); doc.rect(x0,56,x1-x0,last.y+last.h+6-56);
+}
+
 /* ---------- PDF export (same layout as the Triple A quotation) ---------- */
 function buildPDF(){
   const {jsPDF}=window.jspdf; const doc=new jsPDF({unit:"mm",format:"a4"});
@@ -1172,7 +1230,7 @@ function buildPDF(){
   doc.text("COMPANY:",L,52); doc.text("REPRESENTATIVE:",L,58); doc.text("PROJECT:",L,64); doc.text("PHONE:",L+104,52); doc.text("CLIENT:",L+104,58);
   doc.setFont("helvetica","normal"); doc.setTextColor(...INK);
   const v=id=>doc.splitTextToSize($(id).value.trim()||"-",62)[0];
-  doc.text(v("cName"),L+34,52); doc.text(v("cRep"),L+34,58); doc.text(v("cProject"),L+34,64);
+  doc.text(v("cName"),L+38,52); doc.text(v("cRep"),L+38,58); doc.text(v("cProject"),L+38,64);
   doc.text(v("cPhone"),L+122,52); doc.text(v("cCompany"),L+122,58);
   const x0=L-6, x1=W-(L-6);
   doc.setFillColor(...M); doc.rect(x0,70,x1-x0,14,"F");
@@ -1198,14 +1256,24 @@ function buildPDF(){
   const by=boxEnd+10, bh=Math.min(56,266-by-6), half=(x1-x0-6)/2;
   box(x0,by,half,bh); box(x0+half+6,by,half,bh);
   doc.setFont("helvetica","bold"); doc.setFontSize(11.5); doc.setTextColor(...M);
-  doc.text("Prepared By",x0+5,by+9); doc.text("Payment terms:",x0+half+11,by+9);
+  doc.text("Payable To",x0+5,by+9); doc.text("Payment terms:",x0+half+11,by+9);
   doc.setFont("helvetica","normal"); doc.setFontSize(9);
-  doc.text(["Asser Omar","Triple A Media Production","","+20 122 223 3328","admin@tapegypt.com"],x0+5,by+17,{charSpace:.25,lineHeightFactor:1.5});
+  doc.text("Asser Arafa Omar",x0+5,by+16,{charSpace:.25});
+  doc.setFont("helvetica","bold"); doc.setFontSize(10.5); doc.text("Bank Details",x0+5,by+24);
+  doc.setFont("helvetica","normal"); doc.setFontSize(8.3);
+  doc.text(["CIB Bank","Head office branch","Swift: CIBEEGCXXXX","IBAN: EG270010001000000100018165157","Account number: 100018165157"],x0+5,by+30,{charSpace:.2,lineHeightFactor:1.45});
+  doc.setFontSize(9);
   let ty=by+17;
-  ["All rates quoted are valid for 7 days.","50% payment in advance for confirmation.","The remaining amount is due 1 day after posting the reel.","We are exempt from the 3% withholding tax (Facilitation Certificate)."].forEach(t=>{
+  ["All rates quoted are valid for 7 days.","50% payment in advance for confirmation.","The remaining amount is due 1 day after posting the reel."].forEach(t=>{
     const ls=doc.splitTextToSize(t,half-14); doc.text("•",x0+half+11,ty); doc.text(ls,x0+half+15,ty,{lineHeightFactor:1.4}); ty+=ls.length*4.6+1.4;});
+  doc.text("•",x0+half+11,ty); doc.text("We are exempted from the 3%",x0+half+15,ty);
+  const ar=arabicImage("(شهادة التيسيرات)");
+  if(ar){ const h=5, w=h*ar.w/ar.h; doc.addImage(ar.url,"PNG",x0+half+15,ty+1,w,h); }
   foot();
-  // page 2: terms
+  // page 2: timeline
+  doc.addPage(); head(); timelinePage(doc,M,INK,L,R,x0,x1);
+  foot();
+  // page 3: terms
   doc.addPage(); head();
   let yy=76;
   doc.setTextColor(...M); doc.setFont("helvetica","bold"); doc.setFontSize(11.5);
@@ -1276,6 +1344,7 @@ $("pdf").addEventListener("click",async()=>{
 });
 applyLang();
 render();
+loadSerial();
 </script>
 
 </body>
