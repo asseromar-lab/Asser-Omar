@@ -154,7 +154,7 @@ section.rates{padding-block:72px;background:var(--white);border-top:1px solid va
 .svc h4{margin:0;font:400 23px/1.15 var(--serif);color:var(--ink)}
 .svc .price{font:500 13px/1.6 var(--sans);letter-spacing:.06em;color:var(--maroon);font-variant-numeric:tabular-nums;white-space:nowrap}
 .svc p{margin:0;color:var(--muted);font-size:13.5px}
-.qty{direction:ltr;display:flex;align-items:center;border:1px solid var(--line);border-radius:2px;align-self:end;background:var(--paper)}
+.qty{direction:ltr;display:flex;justify-self:end;align-items:center;border:1px solid var(--line);border-radius:2px;align-self:end;background:var(--paper)}
 .qty button{background:none;border:0;color:var(--maroon);width:36px;height:34px;font-size:18px;cursor:pointer}
 .qty button:hover{background:var(--maroon-soft)}
 .qty output{min-width:24px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
@@ -181,6 +181,7 @@ thead th{background:var(--maroon);color:#fff;font:600 11.5px/1 var(--sans);lette
 td{padding:12px 10px;font-weight:600;color:var(--maroon);text-transform:uppercase;font-size:12.5px;letter-spacing:.04em;vertical-align:top}
 tbody tr+tr td{border-top:1px solid var(--line)}
 .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.n.por{white-space:normal;font-size:.85em;line-height:1.3}
 .empty{text-transform:none;font-weight:400;font-style:italic;color:var(--muted)}
 .totals{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--maroon);padding-top:14px;margin-left:auto;width:min(100%,300px)}
 .totals div{display:flex;justify-content:space-between;font-weight:600;color:var(--maroon);letter-spacing:.06em;font-variant-numeric:tabular-nums;font-size:14px}
@@ -1191,7 +1192,7 @@ function quoteText(){
 function render(){
   const {sel,sub,disc,net,vat,tot}=totals();
   SERVICES.forEach(s=>{$("q-"+s.id).textContent=qty[s.id];$("row-"+s.id).classList.toggle("on",qty[s.id]>0);});
-  $("lines").innerHTML=sel.length?sel.map(s=>`<tr><td>${s.name}</td><td class="n">${qty[s.id]}</td><td class="n">${pText(s)}</td><td class="n">${lText(s)}</td></tr>`).join("")
+  $("lines").innerHTML=sel.length?sel.map(s=>`<tr><td>${s.name}</td><td class="n">${qty[s.id]}</td><td class="n${s.por?" por":""}">${pText(s)}</td><td class="n${s.por?" por":""}">${lText(s)}</td></tr>`).join("")
     :`<tr><td colspan="4" class="empty">Add a service to start your quotation.</td></tr>`;
   $("sub").textContent=fmt(sub); $("vat").textContent=fmt(vat); $("tot").textContent=fmt(tot);
   $("porNote").hidden=!hasPor(sel); $("discRow").hidden=$("netRow").hidden=!disc; $("disc").textContent="("+fmt(disc)+")"; $("net").textContent=fmt(net);
@@ -1317,10 +1318,10 @@ function buildPDF(){
   doc.setFont("helvetica","bold"); doc.setFontSize(11.5); doc.setTextColor(...M);
   doc.text("Payable To",x0+5,by+9); doc.text("Payment terms:",x0+half+11,by+9);
   doc.setFont("helvetica","normal"); doc.setFontSize(9);
-  doc.text("Asser Arafa Omar",x0+5,by+16,{charSpace:.25});
+  doc.text("Triple A",x0+5,by+16,{charSpace:.25});
   doc.setFont("helvetica","bold"); doc.setFontSize(10.5); doc.text("Bank Details",x0+5,by+24);
   doc.setFont("helvetica","normal"); doc.setFontSize(8.3);
-  doc.text(["CIB Bank","Head office branch","Swift: CIBEEGCXXXX","IBAN: EG270010001000000100018165157","Account number: 100018165157"],x0+5,by+30,{charSpace:.2,lineHeightFactor:1.45});
+  doc.text(["Bank Name: CIB","Account Name: Triple A","Account No. 100044414777","IBAN No. EG190010015000000100044414777"],x0+5,by+30,{charSpace:.2,lineHeightFactor:1.45});
   doc.setFontSize(9);
   let ty=by+17;
   ["All rates quoted are valid for 7 days.","50% payment in advance for confirmation.","The remaining amount is due 1 day after posting the reel."].forEach(t=>{
@@ -1329,26 +1330,7 @@ function buildPDF(){
   const ar=arabicImage("(شهادة التيسيرات)");
   if(ar){ const h=5, w=h*ar.w/ar.h; doc.addImage(ar.url,"PNG",x0+half+15,ty+1,w,h); }
   foot();
-  // page 2: terms
-  doc.addPage(); head();
-  let yy=76;
-  doc.setTextColor(...M); doc.setFont("helvetica","bold"); doc.setFontSize(11.5);
-  doc.text("TERMS AND CONDITIONS",L+3,yy,{charSpace:.4}); yy+=16;
-  const sec=(title,items)=>{
-    doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.text(title,L+3,yy);
-    doc.setLineWidth(.25); doc.line(L+3,yy+1,L+3+doc.getTextWidth(title),yy+1); yy+=9;
-    doc.setFont("helvetica","normal"); doc.setFontSize(9.5);
-    items.forEach(t=>{const ls=doc.splitTextToSize(t,R-L-14); doc.text("•",L+5,yy); doc.text(ls,L+9,yy,{lineHeightFactor:1.4}); yy+=ls.length*4.8+1.5;});
-    yy+=7;
-  };
-  sec("Revision Policy:",["The client is entitled to two revisions on the script.","The client is entitled to two revisions on the video/ad editing.","Any additional revisions beyond the above will be the client’s responsibility."]);
-  sec("Communication:",["To ensure clarity and efficiency, all communication will be managed through a single point of contact on your end."]);
-  sec("Confirmation Method:",["All approvals or confirmations regarding the brief, timelines, posting dates, or any other details must be documented and confirmed via WhatsApp."]);
-  doc.setFont("helvetica","bold"); doc.setFontSize(11);
-  doc.text(doc.splitTextToSize("We believe these terms will help us deliver the best possible results while maintaining a smooth and efficient workflow.",R-L-8),L+3,yy+4,{lineHeightFactor:1.4});
-  box(x0,62,x1-x0,yy+22-62);
-  foot();
-  // page 3: timeline
+  // page 2: timeline
   doc.addPage(); head(); timelinePage(doc,M,INK,L,R,x0,x1);
   foot();
   return doc;
