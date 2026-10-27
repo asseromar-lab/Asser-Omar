@@ -1375,8 +1375,8 @@ $("pdf").addEventListener("click",async()=>{
   if(!checkDetails()) return;
   logLead("PDF");
   $("toast").textContent=tr("t_prep");
-  const part=v=>v.trim().replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"_");
-  const fn=[part($("cCompany").value)||part($("cName").value)||"Client",part($("cProject").value),dateStr.replace(/\//g,"-")].filter(Boolean).join("_")+".pdf";
+  const part=v=>v.trim().replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g," ");
+  const fn=[part($("cCompany").value)||part($("cName").value)||"Client",dateStr.replace(/\//g,"-"),String(qno).replace(/^#/,"")].join(" - ")+".pdf";
   if(!window.jspdf){ $("toast").textContent=tr("t_nolib"); return; }
   let blob;
   try{ blob=buildPDF().output("blob"); }catch(e){ $("toast").textContent=tr("t_fail"); return; }
