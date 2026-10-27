@@ -589,7 +589,7 @@ html[lang="ar"] .lead,html[lang="ar"] .head p{line-height:1.8}
         <div class="fields">
           <label><span class="lbl"><span data-i18n="f_name">Company name</span> <i class="req">*</i></span><input id="cName" autocomplete="organization" placeholder="e.g. Mention / Palm Hills" data-i18n-ph="ph_name" required></label>
           <label><span class="lbl"><span data-i18n="f_rep">Representative name</span> <i class="req">*</i></span><input id="cRep" autocomplete="name" placeholder="e.g. Ahmed Hassan" data-i18n-ph="ph_rep" required></label>
-          <label><span class="lbl"><span data-i18n="f_phone">Phone / WhatsApp</span> <i class="req">*</i></span><input id="cPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 0100 123 4567" data-i18n-ph="ph_phone" required></label>
+          <label><span class="lbl"><span data-i18n="f_phone">Phone / WhatsApp</span></span><input id="cPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 0100 123 4567" data-i18n-ph="ph_phone"></label>
           <label><span data-i18n="f_company">Client</span><input id="cCompany" placeholder="e.g. Palm Hills (if you're an agency)" data-i18n-ph="ph_company"></label>
           <label class="full"><span data-i18n="f_project">Project / launch</span><input id="cProject" placeholder="e.g. New Cairo launch" data-i18n-ph="ph_project"></label>
           <p class="hint full" data-i18n="hint">Fields marked * are required. Please type in English so your details show on the PDF.</p>
@@ -1131,7 +1131,7 @@ const T={
  hint:["Fields marked * are required. Please type in English so your details show on the PDF.","الخانات المعلّمة بـ * مطلوبة. من فضلك اكتب البيانات بالإنجليزية لتظهر في ملف الـ PDF."],
  b_wa:["Approve on WhatsApp","الموافقة عبر واتساب"],ap_to:["Send your approval to","أرسل الموافقة إلى"],b_pdf:["Export PDF","تحميل PDF"],
  foot:["Est. 2026 — We shape perception","تأسست 2026 — نصنع الانطباع"],
- t_need:["Add the company name, representative name and phone number first.","أضف اسم الشركة واسم المسؤول ورقم الموبايل أولاً."],t_svc:["Add a service first.","أضف خدمة أولاً."],
+ t_need:["Add the company name and representative name first.","أضف اسم الشركة واسم المسؤول أولاً."],t_svc:["Add a service first.","أضف خدمة أولاً."],
  t_prep:["Preparing your PDF…","جارٍ تجهيز ملف الـ PDF…"],t_ready:["Your PDF is ready.","ملف الـ PDF جاهز."],t_saved:["PDF saved.","تم حفظ الملف."],
  t_fail:["Couldn't create the PDF. Please try again.","تعذّر إنشاء الملف. حاول مرة أخرى."],t_cancel:["Download cancelled.","تم إلغاء التحميل."],
  t_wait:["A download is already waiting for your confirmation.","هناك تحميل في انتظار تأكيدك."],t_view:["The PDF can't be saved in this view.","لا يمكن حفظ الملف من هنا."],t_noview:["PDF download isn't available in this view. Tap Approve on WhatsApp and our team will send you the quotation.","تحميل الـ PDF غير متاح من هنا. اضغط الموافقة عبر واتساب وسيرسل لك فريقنا عرض السعر."],t_nolib:["The PDF tool didn't load. Check your connection and refresh the page.","لم تُحمّل أداة الـ PDF. تأكد من الاتصال وأعد تحميل الصفحة."],
@@ -1176,7 +1176,7 @@ function logLead(action){
   try{ fetch(LOG_URL,{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body}).catch(()=>{}); }catch(e){}
 }
 function checkDetails(){
-  const f=[["cName",v=>v.trim().length>1],["cRep",v=>v.trim().length>1],["cPhone",v=>v.replace(/\D/g,"").length>=8]];
+  const f=[["cName",v=>v.trim().length>1],["cRep",v=>v.trim().length>1]];
   let first=null; f.forEach(([id,ok])=>{const bad=!ok($(id).value); $(id).classList.toggle("invalid",bad); if(bad&&!first) first=$(id);});
   if(first){ $("toast").textContent=tr("t_need"); first.focus(); return false; }
   return true;
@@ -1195,7 +1195,7 @@ function totals(){
 function quoteText(){
   const {sel,sub,disc,net,vat,tot}=totals();
   return [`Quotation request ${qno} – Triple A Media Production`,`Date: ${dateStr}`,
-    `Company: ${$("cName").value}`,`Representative: ${$("cRep").value}`,`Phone: ${$("cPhone").value}`,`Client: ${$("cCompany").value||"-"}`,`Project: ${$("cProject").value}`,"",
+    `Company: ${$("cName").value}`,`Representative: ${$("cRep").value}`,`Phone: ${$("cPhone").value.trim()||"-"}`,`Client: ${$("cCompany").value||"-"}`,`Project: ${$("cProject").value}`,"",
     ...sel.map(s=>`• ${s.name} × ${qty[s.id]} = ${s.por?"price upon request":fmt(s.price*qty[s.id])+" EGP"}`),"",
     `Sub total: ${fmt(sub)} EGP`,...(disc?[`Discount: (${fmt(disc)}) EGP`,`Net total: ${fmt(net)} EGP`]:[]),`Tax (14%): ${fmt(vat)} EGP`,`Grand total: ${fmt(tot)} EGP`,...(hasPor(sel)?["+ Reel (outdoor, outside Cairo): price upon request"]:[])].join("\n");
 }
