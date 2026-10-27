@@ -1280,15 +1280,18 @@ function buildPDF(){
   const M=[123,47,47], INK=[58,22,22], W=210, L=20, R=190;
   const logo=document.querySelector(".sheet header img").src;
   const {sel,sub,disc,net,vat,tot}=totals();
+  // right-aligned text that stays flush with R even with letter spacing
+  const rt=(t,y,cs)=>{ const w=doc.getTextWidth(t)+cs*t.length; doc.text(t,R-w,y,{charSpace:cs}); return w; };
   const head=()=>{
     doc.addImage(logo,"PNG",L,16,56,27);
     doc.setTextColor(...M); doc.setFont("helvetica","bold"); doc.setFontSize(21);
-    doc.text("QUOTATION",R,28,{align:"right",charSpace:1.2});
+    rt("QUOTATION",27,1.2);
     doc.setFont("helvetica","normal"); doc.setFontSize(11);
-    doc.text(qno,R,35,{align:"right",charSpace:.4});
-    doc.text("DATE: ",R-doc.getTextWidth(dateStr)-2.6,42,{align:"right",charSpace:.4});
-    doc.setFont("helvetica","bold"); doc.text(dateStr,R,42,{align:"right",charSpace:.3});
-    doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.text("VALID UNTIL: "+validStr,R,48,{align:"right",charSpace:.3});
+    rt(qno,34.5,.3);
+    doc.setFont("helvetica","bold"); const dw=rt(dateStr,41,.3);
+    doc.setFont("helvetica","normal"); const lw=doc.getTextWidth("DATE: ")+.3*5;
+    doc.text("DATE:",R-dw-lw-1.2,41,{charSpace:.3});
+    doc.setFontSize(8.5); rt("VALID UNTIL: "+validStr,47,.3);
   };
   const foot=()=>{
     doc.setDrawColor(...M); doc.setLineWidth(.3); doc.rect(L-6,268,W-2*(L-6),15);
@@ -1302,18 +1305,18 @@ function buildPDF(){
   // page 1
   head();
   doc.setFontSize(9.5); doc.setTextColor(...M); doc.setFont("helvetica","bold");
-  doc.text("COMPANY:",L,52); doc.text("REPRESENTATIVE:",L,58); doc.text("PROJECT:",L,64); doc.text("PHONE:",L+104,52); doc.text("CLIENT:",L+104,58);
+  doc.text("COMPANY:",L,59); doc.text("REPRESENTATIVE:",L,65); doc.text("PROJECT:",L,71); doc.text("PHONE:",L+104,59); doc.text("CLIENT:",L+104,65);
   doc.setFont("helvetica","normal"); doc.setTextColor(...INK);
   const v=id=>doc.splitTextToSize($(id).value.trim()||"-",62)[0];
-  doc.text(v("cName"),L+38,52); doc.text(v("cRep"),L+38,58); doc.text(v("cProject"),L+38,64);
-  doc.text(v("cPhone"),L+122,52); doc.text(v("cCompany"),L+122,58);
+  doc.text(v("cName"),L+38,59); doc.text(v("cRep"),L+38,65); doc.text(v("cProject"),L+38,71);
+  doc.text(v("cPhone"),L+122,59); doc.text(v("cCompany"),L+122,65);
   const x0=L-6, x1=W-(L-6);
-  doc.setFillColor(...M); doc.rect(x0,70,x1-x0,14,"F");
+  doc.setFillColor(...M); doc.rect(x0,78,x1-x0,14,"F");
   doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); doc.setFontSize(10.5);
   const cQ=122, cP=158, cT=R-2;
-  doc.text("ITEM DESCRIPTION",L+2,78.8,{charSpace:.3}); doc.text("QTY",cQ,78.8,{align:"center"});
-  doc.text("PRICE",cP,78.8,{align:"right"}); doc.text("TOTAL",cT,78.8,{align:"right"});
-  let y=100; doc.setTextColor(...M); doc.setFontSize(10.5);
+  doc.text("ITEM DESCRIPTION",L+2,86.8,{charSpace:.3}); doc.text("QTY",cQ,86.8,{align:"center"});
+  doc.text("PRICE",cP,86.8,{align:"right"}); doc.text("TOTAL",cT,86.8,{align:"right"});
+  let y=108; doc.setTextColor(...M); doc.setFontSize(10.5);
   const rows=sel.length?sel:[];
   rows.forEach(s=>{
     const lines=doc.splitTextToSize(s.name.toUpperCase(),88);
@@ -1322,13 +1325,13 @@ function buildPDF(){
     doc.text(pText(s),cP,y,{align:"right"}); doc.text(lText(s),cT,y,{align:"right"});
     y+=6+lines.length*4.6;
   });
-  y=Math.max(y,126)+2;
+  y=Math.max(y,132)+2;
   doc.setDrawColor(...M); doc.setLineWidth(.25); doc.line(L+2,y,cT,y); y+=10;
   const tl=[["SUB TOTAL",fmt(sub)],...(disc?[["DISCOUNT","("+fmt(disc)+")"],["NET TOTAL",fmt(net)]]:[]),["TAX (14%)",fmt(vat)],["GRAND TOTAL",fmt(tot)]];
   tl.forEach(([k,v],i)=>{const last=i===tl.length-1; doc.setFont("helvetica","bold");doc.setFontSize(last?11.5:10.5);
     if(last){doc.setLineWidth(.25);doc.line(cQ-8,y-5.5,cT,y-5.5);} doc.text(k,cQ-8,y,{charSpace:.4}); doc.text(v,cT,y,{align:"right"}); y+=8.5;});
   if(hasPor(sel)){ doc.setFont("helvetica","italic"); doc.setFontSize(8.5); doc.text("+ Reel (outdoor, outside Cairo): price upon request",cT,y-2,{align:"right"}); y+=4; }
-  const boxEnd=y+4; box(x0,90,x1-x0,boxEnd-90);
+  const boxEnd=y+4; box(x0,98,x1-x0,boxEnd-98);
   const by=boxEnd+10, bh=Math.min(56,266-by-6), half=(x1-x0-6)/2;
   box(x0,by,half,bh); box(x0+half+6,by,half,bh);
   doc.setFont("helvetica","bold"); doc.setFontSize(11.5); doc.setTextColor(...M);
