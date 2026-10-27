@@ -1158,20 +1158,25 @@ document.querySelector(".apopts").addEventListener("click",e=>{const b=e.target.
   document.querySelectorAll(".apo").forEach(x=>x.setAttribute("aria-checked",String(x===b))); render();});
 
 /* ---------- serial number from the Quotations sheet (falls back to a web reference) ---------- */
+let qUsed=false, qSig="";
+const quoteSig=()=>JSON.stringify([qty,["cName","cRep","cPhone","cCompany","cProject","cDisc"].map(id=>$(id).value)]);
 async function loadSerial(){
-  if(!LOG_URL) return;
-  try{ const r=await fetch(LOG_URL+"?op=next",{method:"GET"}); const j=await r.json();
-    if(j&&j.next){ qno="#"+String(j.next).replace(/^#/,""); $("qNo").textContent=qno; render(); } }catch(e){}
+  if(!LOG_URL||qUsed) return;
+  try{ const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),4000);
+    const r=await fetch(LOG_URL+"?op=next",{method:"GET",signal:ctl.signal}); clearTimeout(t); const j=await r.json();
+    if(j&&j.next&&!qUsed){ qno="#"+String(j.next).replace(/^#/,""); $("qNo").textContent=qno; render(); } }catch(e){}
 }
+function markUsed(){ qUsed=true; qSig=quoteSig(); }
+setInterval(loadSerial,45000);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) loadSerial(); });
 
 /* ---------- lead log (fills the "Web Requests" tab of the Triple A Quotations Log sheet) ---------- */
-const LOG_URL="";
+const LOG_URL="https://script.google.com/macros/s/AKfycbyxCTPn4LKHrSkNaqeaedE6WKxyKqobvtQLm0XZqILeUCgxgd-P0JKhz4bkj8YwPeh0/exec";
 function logLead(action){
   if(!LOG_URL) return;
   const {sel,sub,disc,net,vat,tot}=totals();
   const body=JSON.stringify({no:qno,action,name:$("cName").value.trim(),rep:$("cRep").value.trim(),phone:$("cPhone").value.trim(),company:$("cCompany").value.trim(),project:$("cProject").value.trim(),
     items:sel.map(s=>`${s.name} x${qty[s.id]}`).join(" + "),sub,disc,net,tax:vat,total:tot,date:dateStr,approver:APPROVERS[AP].name,lang:LANG,page:location.protocol==="file:"?"file":location.host});
-  setTimeout(loadSerial,2500);
   try{ if(navigator.sendBeacon && navigator.sendBeacon(LOG_URL,new Blob([body],{type:"text/plain;charset=utf-8"}))) return; }catch(e){}
   try{ fetch(LOG_URL,{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body}).catch(()=>{}); }catch(e){}
 }
@@ -1200,6 +1205,7 @@ function quoteText(){
     `Sub total: ${fmt(sub)} EGP`,...(disc?[`Discount: (${fmt(disc)}) EGP`,`Net total: ${fmt(net)} EGP`]:[]),`Tax (14%): ${fmt(vat)} EGP`,`Grand total: ${fmt(tot)} EGP`,...(hasPor(sel)?["+ Reel (outdoor, outside Cairo): price upon request"]:[])].join("\n");
 }
 function render(){
+  if(qUsed && quoteSig()!==qSig){ qUsed=false; loadSerial(); }
   const {sel,sub,disc,net,vat,tot}=totals();
   SERVICES.forEach(s=>{$("q-"+s.id).textContent=qty[s.id];$("row-"+s.id).classList.toggle("on",qty[s.id]>0);});
   $("lines").innerHTML=sel.length?sel.map(s=>`<tr><td>${s.name}</td><td class="n">${qty[s.id]}</td><td class="n${s.por?" por":""}">${pText(s)}</td><td class="n${s.por?" por":""}">${lText(s)}</td></tr>`).join("")
@@ -1216,7 +1222,7 @@ function render(){
 $("wa").addEventListener("click",e=>{
   if(!totals().sel.length){e.preventDefault();$("toast").textContent=tr("t_svc");return;}
   if(!checkDetails()){e.preventDefault();return;}
-  logLead("WhatsApp");
+  logLead("WhatsApp"); markUsed();
 });
 
 
@@ -1373,8 +1379,9 @@ function openPdf(blob,fn,url){
 $("pdf").addEventListener("click",async()=>{
   if(!totals().sel.length){$("toast").textContent=tr("t_svc");return;}
   if(!checkDetails()) return;
-  logLead("PDF");
   $("toast").textContent=tr("t_prep");
+  if(!qUsed) await loadSerial();
+  logLead("PDF"); markUsed();
   const part=v=>v.trim().replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g," ");
   const fn=[part($("cCompany").value)||part($("cName").value)||"Client",dateStr.replace(/\//g,"-"),String(qno).replace(/^#/,"")].join(" - ")+".pdf";
   if(!window.jspdf){ $("toast").textContent=tr("t_nolib"); return; }
