@@ -570,6 +570,15 @@ html[lang="ar"] .lead,html[lang="ar"] .head p{line-height:1.8}
               <button type="button" data-id="rights" data-d="1" aria-label="Add one">+</button>
             </div>
           </div>
+          <div class="svc" id="row-media">
+            <h4 data-i18n="s_media_n">Media buying</h4><span class="price" data-price="media">50,000 EGP</span>
+            <p data-i18n="s_media_d">Allows you to run your ads on the post or collab.</p>
+            <div class="qty" role="group" aria-label="Media buying quantity">
+              <button type="button" data-id="media" data-d="-1" aria-label="Remove one">−</button>
+              <output id="q-media">0</output>
+              <button type="button" data-id="media" data-d="1" aria-label="Add one">+</button>
+            </div>
+          </div>
           <div class="svc disc" id="row-disc">
             <h4 data-i18n="d_n">Promo code</h4><span class="price" id="discShow"></span>
             <p data-i18n="d_d">Have a promo code from our team? Enter it here and the discount is deducted before tax.</p>
@@ -1069,9 +1078,10 @@ const SERVICES=[
   {id:"outdoor2",name:"Reel (outdoor, outside Cairo)",price:0,por:true,desc:"A scripted, presenter-led reel shot on site outside Cairo. Priced per location."},
   {id:"coverage",name:"Coverage reel + event + stories",price:350000,desc:"Event attendance, live stories, and a reel cut from the event."},
   {id:"full",name:"Reel + event attendance + stories",price:400000,desc:"A dedicated project reel plus event attendance and stories."},
-  {id:"rights",name:"Copyrights",price:50000,desc:"Usage rights so your team can reuse the reel on your own pages and ads."}
+  {id:"rights",name:"Copyrights",price:50000,desc:"Usage rights so your team can reuse the reel on your own pages and ads."},
+  {id:"media",name:"Media buying",price:50000,desc:"Allows you to run your ads on the post or collab."}
 ];
-const qty={stories:0,event:0,reel:1,outdoor:0,outdoor2:0,coverage:0,full:0,rights:0};
+const qty={stories:0,event:0,reel:1,outdoor:0,outdoor2:0,coverage:0,full:0,rights:0,media:0};
 const VAT=0.14, $=id=>document.getElementById(id), fmt=n=>n.toLocaleString("en-US");
 const now=new Date(), pad=n=>String(n).padStart(2,"0");
 const _v=new Date(now.getTime()+7*864e5);
@@ -1115,7 +1125,7 @@ const T={
  s_outdoor2_n:["Reel (outdoor, outside Cairo)","ريل (تصوير خارجي، خارج القاهرة)"],s_outdoor2_d:["A scripted, presenter-led reel shot on site outside Cairo. Priced per location.","ريل بسكريبت يقدّمه آسر، بتصوير خارج القاهرة. السعر حسب الموقع."],
  s_coverage_n:["Coverage reel + event + stories","ريل تغطية + فعالية + ستوريز"],s_coverage_d:["Event attendance, live stories, and a reel cut from the event.","حضور الفعالية وستوريز مباشرة وريل من تغطية الفعالية."],
  s_full_n:["Reel + event attendance + stories","ريل + حضور فعالية + ستوريز"],s_full_d:["A dedicated project reel plus event attendance and stories.","ريل خاص بالمشروع، مع حضور الفعالية والستوريز."],
- s_rights_n:["Copyrights","حقوق الاستخدام"],s_rights_d:["Usage rights so your team can reuse the reel on your own pages and ads.","حقوق استخدام الريل على صفحاتكم وفي إعلاناتكم."],
+ s_rights_n:["Copyrights","حقوق الاستخدام"],s_rights_d:["Usage rights so your team can reuse the reel on your own pages and ads.","حقوق استخدام الريل على صفحاتكم وفي إعلاناتكم."],s_media_n:["Media buying","الميديا باينج"],s_media_d:["Allows you to run your ads on the post or collab.","تقدروا تشغّلوا إعلاناتكم على البوست أو الـ collab."],
  det:["Your details","بياناتك"],f_name:["Company name","اسم الشركة"],f_rep:["Representative name","اسم المسؤول"],f_phone:["Phone / WhatsApp","رقم الموبايل / واتساب"],f_company:["Client","العميل"],f_project:["Project / launch","المشروع / الإطلاق"],
  ph_name:["e.g. Mention / Palm Hills","مثال: Mention / Palm Hills"],ph_rep:["e.g. Ahmed Hassan","مثال: Ahmed Hassan"],ph_phone:["e.g. 0100 123 4567","مثال: 0100 123 4567"],ph_company:["e.g. Palm Hills (if you're an agency)","مثال: Palm Hills (لو حضرتك وكالة)"],ph_project:["e.g. New Cairo launch","مثال: New Cairo launch"],
  hint:["Fields marked * are required. Please type in English so your details show on the PDF.","الخانات المعلّمة بـ * مطلوبة. من فضلك اكتب البيانات بالإنجليزية لتظهر في ملف الـ PDF."],
